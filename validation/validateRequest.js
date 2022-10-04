@@ -1,12 +1,4 @@
 const createError = require("../utils/createError");
-const schemaId = require("./createIdSchema");
-
-function validateId(id) {
-  const { error } = schemaId.validate(id);
-  if (error) {
-    throw createError(400, error.message);
-  }
-}
 
 function validateRequestBody(schema, body) {
   const { error } = schema.validate(body);
@@ -20,4 +12,4 @@ function validateRequestBody(schema, body) {
   }
 }
 
-module.exports = { validateId, validateRequestBody };
+module.exports = { validateRequestBody };
