@@ -5,12 +5,17 @@ const {
   removeContact,
   addContact,
   updateContact,
-} = require("../../models/contacts");
+  updateStatusContact,
+} = require("../service");
 const {
   schemaAddContact,
   schemaUpdateContact,
-} = require("../../schemas/createContactSchema");
-const createError = require("../../utils/createError");
+  schemaUpdateFavorite,
+} = require("../validation/createContactSchema");
+const {
+  validateRequestBody,
+  validateId,
+} = require("../validation/validateRequest");
 
 const router = express.Router();
 
@@ -25,6 +30,7 @@ router.get("/", async (req, res, next) => {
 
 router.get("/:contactId", async (req, res, next) => {
   try {
+    validateId(req.params.contactId);
     const contact = await getContactById(req.params.contactId);
     res.status(200).json(contact);
   } catch (error) {
@@ -34,10 +40,7 @@ router.get("/:contactId", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
   try {
-    const { error } = schemaAddContact.validate(req.body);
-    if (error) {
-      throw createError(400, error.message);
-    }
+    validateRequestBody(schemaAddContact, req.body);
     const contact = await addContact(req.body);
     res.status(201).json(contact);
   } catch (error) {
@@ -47,6 +50,7 @@ router.post("/", async (req, res, next) => {
 
 router.delete("/:contactId", async (req, res, next) => {
   try {
+    validateId(req.params.contactId);
     await removeContact(req.params.contactId);
     res.status(200).json({ message: "contact deleted" });
   } catch (error) {
@@ -56,16 +60,20 @@ router.delete("/:contactId", async (req, res, next) => {
 
 router.put("/:contactId", async (req, res, next) => {
   try {
-    const { error } = schemaUpdateContact.validate(req.body);
-    if (error) {
-      if (
-        error.message ===
-        '"value" must contain at least one of [name, email, phone]'
-      )
-        error.message = "missing fields";
-      throw createError(400, error.message);
-    }
-    const contact = await updateContact(req.params.id, req.body);
+    validateId(req.params.contactId);
+    validateRequestBody(schemaUpdateContact, req.body);
+    const contact = await updateContact(req.params.contactId, req.body);
+    res.status(200).json(contact);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.patch("/:contactId/favorite", async (req, res, next) => {
+  try {
+    validateId(req.params.contactId);
+    validateRequestBody(schemaUpdateFavorite, req.body);
+    const contact = await updateStatusContact(req.params.contactId, req.body);
     res.status(200).json(contact);
   } catch (error) {
     next(error);
