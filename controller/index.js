@@ -1,4 +1,3 @@
-const express = require("express");
 const {
   listContacts,
   getContactById,
@@ -17,18 +16,16 @@ const {
   validateId,
 } = require("../validation/validateRequest");
 
-const router = express.Router();
-
-router.get("/", async (req, res, next) => {
+const getContactsController = async (req, res, next) => {
   try {
     const contacts = await listContacts();
     res.status(200).json(contacts);
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.get("/:contactId", async (req, res, next) => {
+const getContactByIdController = async (req, res, next) => {
   try {
     validateId(req.params.contactId);
     const contact = await getContactById(req.params.contactId);
@@ -36,9 +33,9 @@ router.get("/:contactId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.post("/", async (req, res, next) => {
+const addContactController = async (req, res, next) => {
   try {
     validateRequestBody(schemaAddContact, req.body);
     const contact = await addContact(req.body);
@@ -46,9 +43,9 @@ router.post("/", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.delete("/:contactId", async (req, res, next) => {
+const deleteContactController = async (req, res, next) => {
   try {
     validateId(req.params.contactId);
     await removeContact(req.params.contactId);
@@ -56,9 +53,9 @@ router.delete("/:contactId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.put("/:contactId", async (req, res, next) => {
+const updateContactController = async (req, res, next) => {
   try {
     validateId(req.params.contactId);
     validateRequestBody(schemaUpdateContact, req.body);
@@ -67,9 +64,9 @@ router.put("/:contactId", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-router.patch("/:contactId/favorite", async (req, res, next) => {
+const updateFavoriteController = async (req, res, next) => {
   try {
     validateId(req.params.contactId);
     validateRequestBody(schemaUpdateFavorite, req.body);
@@ -78,6 +75,13 @@ router.patch("/:contactId/favorite", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
-});
+};
 
-module.exports = router;
+module.exports = {
+  getContactsController,
+  getContactByIdController,
+  addContactController,
+  deleteContactController,
+  updateContactController,
+  updateFavoriteController,
+};
