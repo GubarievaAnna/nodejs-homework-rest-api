@@ -5,7 +5,7 @@ const {
   addContact,
   updateContact,
   updateStatusContact,
-} = require("../service");
+} = require("../service/contactsService");
 const {
   schemaAddContact,
   schemaUpdateContact,
