@@ -4,6 +4,7 @@ const {
   loginController,
   logoutController,
   currentUserController,
+  updateSubscriptionController,
 } = require("../controller/authController");
 const checkAuth = require("../middlewares/checkAuthMiddleware");
 
@@ -16,5 +17,7 @@ router.post("/login", loginController);
 router.patch("/logout", checkAuth, logoutController);
 
 router.get("/current", checkAuth, currentUserController);
+
+router.patch("/", checkAuth, updateSubscriptionController);
 
 module.exports = router;

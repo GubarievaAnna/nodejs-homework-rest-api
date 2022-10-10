@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const schema = Joi.object({
+const schemaAuth = Joi.object({
   email: Joi.string()
     .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
     .required()
@@ -18,4 +18,13 @@ const schema = Joi.object({
     }),
 });
 
-module.exports = schema;
+const schemaUpdateSubscription = Joi.object({
+  subscription: Joi.string()
+    .valid("starter", "pro", "business")
+    .required()
+    .messages({
+      "any.required": "missing field favorite",
+    }),
+});
+
+module.exports = { schemaAuth, schemaUpdateSubscription };
