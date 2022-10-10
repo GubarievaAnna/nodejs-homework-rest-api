@@ -1,8 +1,13 @@
 const Contact = require("./schemas/contact");
 const createError = require("../utils/createError");
 
-const listContacts = async (userId) => {
-  return await Contact.find({ owner: userId });
+const listContacts = async (userId, query) => {
+  const { favorite, page = 1, limit = 20 } = query;
+  return await Contact.find(
+    favorite ? { owner: userId, favorite } : { owner: userId }
+  )
+    .skip(page === 1 ? 0 : (page - 1) * limit)
+    .limit(limit);
 };
 
 const getContactById = async (contactId, userId) => {

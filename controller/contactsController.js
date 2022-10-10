@@ -15,7 +15,7 @@ const { validateRequestBody } = require("../validation/validateRequest");
 
 const getContactsController = async (req, res, next) => {
   try {
-    const contacts = await listContacts(req.user.id);
+    const contacts = await listContacts(req.user.id, req.query);
     res.status(200).json(contacts);
   } catch (error) {
     next(error);
