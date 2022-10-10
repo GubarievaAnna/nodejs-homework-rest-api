@@ -3,11 +3,12 @@ const createError = require("../utils/createError");
 
 const listContacts = async (userId, query) => {
   const { favorite, page = 1, limit = 20 } = query;
-  return await Contact.find(
+  const contacts = await Contact.find(
     favorite ? { owner: userId, favorite } : { owner: userId }
   )
-    .skip(page === 1 ? 0 : (page - 1) * limit)
+    .skip((page - 1) * limit)
     .limit(limit);
+  return contacts;
 };
 
 const getContactById = async (contactId, userId) => {
