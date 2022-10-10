@@ -1,14 +1,17 @@
 const Contact = require("./schemas/contact");
 const createError = require("../utils/createError");
 
-const listContacts = async () => {
-  return await Contact.find();
+const listContacts = async (userId) => {
+  return await Contact.find({ owner: userId });
 };
 
-const getContactById = async (contactId) => {
+const getContactById = async (contactId, userId) => {
   const contactById = await Contact.findById(contactId);
   if (!contactById) {
     throw createError(404, "Not found");
+  }
+  if (JSON.stringify(userId) !== JSON.stringify(contactById.owner)) {
+    throw createError(401, "Not authorized");
   }
   return contactById;
 };

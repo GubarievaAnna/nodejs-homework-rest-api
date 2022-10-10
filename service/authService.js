@@ -1,6 +1,9 @@
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const User = require("./schemas/user");
 const createError = require("../utils/createError");
+
+require("dotenv").config();
 
 const register = async (body) => {
   const { email, password } = body;
@@ -35,7 +38,23 @@ const login = async (body) => {
     throw createError(401, "Email or password is wrong");
   }
 
-  return user;
+  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET);
+
+  const userAfterTokenUpdate = await User.findByIdAndUpdate(
+    user.id,
+    { token },
+    { new: true }
+  );
+
+  return userAfterTokenUpdate;
 };
 
-module.exports = { register, login };
+const logout = async (id) => {
+  await User.findByIdAndUpdate(id, { token: "" });
+};
+
+const getCurrentUser = async (id) => {
+  return User.findById(id);
+};
+
+module.exports = { register, login, logout, getCurrentUser };

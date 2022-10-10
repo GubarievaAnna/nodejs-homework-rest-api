@@ -15,7 +15,7 @@ const { validateRequestBody } = require("../validation/validateRequest");
 
 const getContactsController = async (req, res, next) => {
   try {
-    const contacts = await listContacts();
+    const contacts = await listContacts(req.user.id);
     res.status(200).json(contacts);
   } catch (error) {
     next(error);
@@ -24,7 +24,7 @@ const getContactsController = async (req, res, next) => {
 
 const getContactByIdController = async (req, res, next) => {
   try {
-    const contact = await getContactById(req.params.contactId);
+    const contact = await getContactById(req.params.contactId, req.user.id);
     res.status(200).json(contact);
   } catch (error) {
     next(error);
@@ -34,7 +34,7 @@ const getContactByIdController = async (req, res, next) => {
 const addContactController = async (req, res, next) => {
   try {
     validateRequestBody(schemaAddContact, req.body);
-    const contact = await addContact(req.body);
+    const contact = await addContact({ ...req.body, owner: req.user.id });
     res.status(201).json(contact);
   } catch (error) {
     next(error);
