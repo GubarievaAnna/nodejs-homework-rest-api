@@ -1,5 +1,6 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
 const User = require("./schemas/user");
 const createError = require("../utils/createError");
 
@@ -19,6 +20,7 @@ const register = async (body) => {
   const userNew = await User.create({
     email,
     password: hash,
+    avatarURL: gravatar.url(email),
   });
 
   return userNew;
@@ -53,23 +55,8 @@ const logout = async (id) => {
   await User.findByIdAndUpdate(id, { token: "" });
 };
 
-const getCurrentUser = async (id) => {
-  return User.findById(id);
-};
-
-const updateSubscription = async (id, subscription) => {
-  const userAfterSubscriptionUpdate = User.findByIdAndUpdate(
-    id,
-    { subscription },
-    { new: true }
-  );
-  return userAfterSubscriptionUpdate;
-};
-
 module.exports = {
   register,
   login,
   logout,
-  getCurrentUser,
-  updateSubscription,
 };
