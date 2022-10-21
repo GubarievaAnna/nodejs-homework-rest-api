@@ -27,4 +27,14 @@ const schemaUpdateSubscription = Joi.object({
     }),
 });
 
-module.exports = { schemaAuth, schemaUpdateSubscription };
+const schemaVerifyEmail = Joi.object({
+  email: Joi.string()
+    .email({ minDomainSegments: 2, tlds: { allow: ["com", "net"] } })
+    .required()
+    .messages({
+      "string.email": "not valid email",
+      "any.required": "missing required email field",
+    }),
+});
+
+module.exports = { schemaAuth, schemaUpdateSubscription, schemaVerifyEmail };

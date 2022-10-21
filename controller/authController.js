@@ -1,6 +1,15 @@
 const { validateRequestBody } = require("../validation/validateRequest");
-const { schemaAuth } = require("../validation/createUserSchema");
-const { register, login, logout } = require("../service/authService");
+const {
+  schemaAuth,
+  schemaVerifyEmail,
+} = require("../validation/createUserSchema");
+const {
+  register,
+  login,
+  logout,
+  verifyEmail,
+  resendEmail,
+} = require("../service/authService");
 
 const registerController = async (req, res, next) => {
   try {
@@ -33,8 +42,29 @@ const logoutController = async (req, res, next) => {
   }
 };
 
+const verifyEmailController = async (req, res, next) => {
+  try {
+    await verifyEmail(req.params.verificationToken);
+    res.status(200).json({ message: "Verification successful" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const resendEmailController = async (req, res, next) => {
+  try {
+    validateRequestBody(schemaVerifyEmail, req.body);
+    await resendEmail(req.body.email);
+    res.status(200).json({ message: "Verification email sent" });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   registerController,
   loginController,
   logoutController,
+  verifyEmailController,
+  resendEmailController,
 };
